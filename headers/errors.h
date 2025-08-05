@@ -18,8 +18,8 @@ typedef enum ERROR_CODES {
   ERROR_CODE_5
 } ERROR_CODES;
 
-void print_external_error(int error_code, location file);
+void report_external_error(int error_code, location file);
 
-void print_internal_error(int error_code);
+void report_internal_error(int error_code);
 
 #endif
