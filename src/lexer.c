@@ -32,3 +32,14 @@ int is_instruction(char *str) {
   }
   return 0;
 }
+
+int reg_index(char *str) {
+  int i;
+  if(str == NULL) return -1;
+  for(i = 0; i < REG_COUNT; i++) {
+    if(strcmp(str, REGS[i]) == 0)
+      return i;
+  }
+  return -1;
+}
+  

@@ -5,6 +5,10 @@
 #include "../headers/errors.h"
 #include "../headers/globals.h"
 
+int is_whitespace(char c) {
+  return (isspace(c) && c != '\n');
+}
+
 void *handle_malloc(long obj_size) {
   void *obj_ptr = malloc(obj_size);
   if(obj_ptr == NULL)
@@ -21,3 +25,26 @@ char *add_new_file(char *file_name, char *file_suff) {
   strcat(new_file_name, file_suff);
   return new_file_name;
 }
+
+void abrupt_close(int args_num, ...) {
+   int i;
+   char *str;
+   FILE *file;
+   va_list args;
+   va_start(args, args_num);
+   for(i = 0; i < args_num; i++) {
+    if(strcmp(va_arg(args, char*), "%s") == 0) {
+      i++;
+      str = va_arg(args, char*);
+      remove(str);
+      free(str);
+    }
+    else {
+      file = va_arg(args, FILE*);
+      fclose(file);
+    }
+  }
+  va_end(args);
+}
+
+
