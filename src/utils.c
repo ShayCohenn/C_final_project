@@ -16,7 +16,7 @@ void *handle_malloc(long obj_size) {
   return obj_ptr;
 }
 
-char *add_new_file(char *file_name, char *file_suff) {
+char *create_file(char *file_name, char *file_suff) {
   char *c, *new_file_name;
   new_file_name = handle_malloc(MAX_LINE_SIZE * sizeof(char));
   strcpy(new_file_name, file_name);

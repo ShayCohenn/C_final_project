@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
 #include "../headers/preproc.h"
 #include "../headers/errors.h"
 #include "../headers/globals.h"
@@ -33,4 +34,30 @@ int is_valid_macro(char *str, char **name, int line, char *file_name) {
   return 1;
 }
 
+char *macro_to_str(FILE *file, fpos_t *file_pos, int *line) {
+  int macro_len;
+  char str[MAX_LINE_SIZE];
+  if(fsetpos(file, file_pos) != 0) {
+    report_internal_error(ERROR_CODE_5);
+    return NULL;
+  }
+  macro_len = 0;
+  str[0] = '\0';
+  
+  while(fgets(str, MAX_LINE_SIZE, file) && (strcmp(str, "endmcro\n")) != 0) {
+    if((strstr(str, "endmcro") != NULL) && strlen(str) != strlen("endmcro")) {
+      report_internal_error(ERROR_CODE_9);
+      return NULL;
+    }
+    (*line)++;
+    if(strcmp(str, "endmcro\n") != 0) 
+      macro_len += strlen(str);
+  }
+  
+  mcro = copy_text(file, file_pos, macro_len);
+  return mcro;
+}
 
+int macro_exec(char file_name[]) {
+  return 1;
+}
