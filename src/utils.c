@@ -47,4 +47,11 @@ void abrupt_close(int args_num, ...) {
   va_end(args);
 }
 
-
+int is_int(char *str) {
+  char *ptr;
+  if(str != NULL) {
+    strtol(str, &ptr, 10);
+    if(*ptr == '\0' || *ptr == ' ') return 1;
+  }
+  return 0;
+}

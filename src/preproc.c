@@ -7,6 +7,7 @@
 #include "../headers/globals.h"
 #include "../headers/lexer.h"
 #include "../headers/utils.h"
+#include "../headers/text.h"
 
 int is_valid_macro(char *str, char **name, int line, char *file_name) {
   char *temp_name, *extra;
@@ -56,6 +57,47 @@ char *macro_to_str(FILE *file, fpos_t *file_pos, int *line) {
   
   mcro = copy_text(file, file_pos, macro_len);
   return mcro;
+}
+
+int add_macro(char *file_name, node **head) {
+  int line, success;
+  FILE file;
+  fpos_t file_pos;
+  char str[MAX_LINE_SIZE];
+  char *name, *content;
+  
+  success = 1;
+  
+  file = fopen(file_name, "r");
+  if(file == NULL) {
+    report_internal_error(ERROR_CODE_11);
+    success = 0;
+    return success;
+  }
+  line = 0;
+  while(fgets(str, MAX_LINE_SIZE, file)) {
+    line++;
+    if(strcmp(strtok(str, " "), "mcro") == 0) {
+      int macro_line = line;
+      if(!is_valid_macro(str, &name, line, file_name)) {
+        success = 0;
+        continue;
+      }
+      
+      fgetpos(file, &file_pos);
+      content = macro_to_str(file, &file_pos, &line);
+      
+      if(content == NULL) {
+        success = 0;
+        continue;
+      }
+      
+      fsetpos(file, &file_pos);
+      add_node_to_ll(head, name, content, macro_line;
+    }
+  }
+  fclose(file, &file_pos);
+  return success;
 }
 
 int macro_exec(char file_name[]) {

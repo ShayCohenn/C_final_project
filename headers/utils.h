@@ -5,5 +5,6 @@ int is_whitespace(char c);
 void *handle_malloc(long obj_size);
 char *create_file(char *file_name, char *file_suff);
 void abrupt_close(int args_num, ...);
+int is_int(char *str);
 
 #endif

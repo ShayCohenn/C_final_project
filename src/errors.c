@@ -12,7 +12,9 @@ Error errors[] {
   {ERROR_CODE_6, "ERROR: .as file name missing."},
   {ERROR_CODE_7, "ERROR: Failed to open new file for writing."},
   {ERROR_CODE_8, "ERROR: Line too long"},
-  {ERROR_CODE_9, "ERROR: Extra text after endmcro."}
+  {ERROR_CODE_9, "ERROR: Extra text after endmcro."},
+  {ERROR_CODE_10, "ERROR: Macro defined more then once."},
+  {ERROR_CODE_11, "ERROR: Failed to open new file for reading."}
 };
 
 void report_internal_error(int error_code) {
