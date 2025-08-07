@@ -26,7 +26,7 @@ char *create_file(char *file_name, char *file_suff) {
   return new_file_name;
 }
 
-void abrupt_close(int args_num, ...) {
+void sudden_file_close(int args_num, ...) {
    int i;
    char *str;
    FILE *file;
@@ -55,3 +55,37 @@ int is_int(char *str) {
   }
   return 0;
 }
+
+int is_empty_file(FILE *file, char *mode) {
+  if(file == NULL) {
+    if(strcmp(mode, "r")) 
+      report_internal_error(ERROR_CODE_11);
+    else if(strcmp(mode, "w"))
+      report_internal_error(ERROR_CODE_7);
+    return 0;
+  }
+  return 1;
+}
+
+int copy_file(char *original_file_name, char *new_file_name) {
+  char str[MAX_LINE_SIZE];
+  FILE *file, *new_file;
+  
+  file = fopen(original_file_name, "r");
+  if(is_empty_file(file, "r")) return 0;
+  
+  new_file = fopen(new_file_name, "w");
+  if(is_empty_file(new_file, "w")) {
+    fclose(file);
+    return 0;
+  }
+  
+  while(fgets(str, MAX_LINE_SIZE, file) != NULL) {
+    fprintf(new_file, "%s", str);
+  }
+  
+  fclose(file);
+  fclose(new_file);
+  return 1;
+}
+  

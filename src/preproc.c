@@ -116,7 +116,7 @@ char *remove_macro_decleration(char file_name[]) {
   output_file = fopen(new_file, "w");
   if(output_file == NULL) {
     report_internal_error(ERROR_CODE_7);
-    abrupt_close(4, "file", file, "%s", new_file);
+    sudden_file_close(4, "file", file, "%s", new_file);
     return NULL;
   }
   while(fgets(str, MAX_LINE_SIZE, file)) {
@@ -171,6 +171,17 @@ char *replace_one_macro(char *str, node *mcro) {
   
   return new_str;
 }
+
+char *replace_all_macros(char file_name[], node *head) {
+  node *mcro;
+  char *mcro_pos, *new_str, *temp_file_ad, *final_file_name;
+  char *str[MAX_LINE_SIZE];
+  FILE *temp_file, *final_file;
+  
+  temp_file_ad = create_file(file_name, ".tmp");
+  final_file_name = create_file(file_name, ".am");
+  
+  if(!
 
 int macro_exec(char file_name[]) {
   return 1;

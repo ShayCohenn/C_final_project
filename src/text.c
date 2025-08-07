@@ -85,13 +85,13 @@ char *whitespace_remove_file(char file_name[]) {
   
   new_file_name = add_new_file(file_name, ".t01");
   if(new_file_name == NULL) {
-    abrupt_close(2, "file", file);
+    sudden_file_close(2, "file", file);
     return NULL;
   }
   
   file_temp = fopen(new_file_name, "w");
   if(file_temp == NULL) {
-    abrupt_close(4, "file", file, "%s", new_file_name);
+    sudden_file_close(4, "file", file, "%s", new_file_name);
     report_internal_error(ERROR_CODE_7);
     return NULL;
   }
