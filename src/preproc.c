@@ -100,6 +100,78 @@ int add_macro(char *file_name, node **head) {
   return success;
 }
 
+char *remove_macro_decleration(char file_name[]) { 
+  char *word, *new_file;
+  char str[MAX_LINE_SIZE];
+  char str_cpy[MAX_LINE_SIZE];
+  FILE *file, *output_file;
+  
+  file = fopen(file_name, "r");
+  if(file ==NULL) {
+    report_internal_error(ERROR_CODE_11);
+    return NULL;
+  }
+  
+  new_file = create_file(file_name, ".t02");
+  output_file = fopen(new_file, "w");
+  if(output_file == NULL) {
+    report_internal_error(ERROR_CODE_7);
+    abrupt_close(4, "file", file, "%s", new_file);
+    return NULL;
+  }
+  while(fgets(str, MAX_LINE_SIZE, file)) {
+    strcpy(str_cpy, str);
+    word = strtok(str, " \n";
+    if(word == NULL) {
+      fprintf(output_file, "\n");
+      continue;
+    }
+    
+    if(strcmp(word, "mcro") == 0){
+      while(strcmp(word, "endmcro") != 0) {
+        fprintf(output_file, "\n");
+        fgets(str, MAX_LINE_SIZE, file);
+        word = strtok(str, " \n";
+        
+        while(word == NULL) {
+          fprintf(output_file, "\n");
+          fgets(str, MAX_LINE_SIZE, file);
+          word = strtok(str, " \n");
+        }
+      }
+      fprintf(output_file, "\n");
+    } else {
+      fprintf(output_file, "%s", str_cpy);
+    }
+  }
+  fclose(file);
+  fclose(output_file);
+  
+  return new_file;
+}
+
+char *replace_one_macro(char *str, node *mcro) {
+  char *mcro_pos, *new_str;
+  char str_start[MAX_LINE_SIZE];
+  char str_end[MAX_LINE_SIZE];
+  
+  strcpy(str_start, str);
+  
+  mcro_pos = strstr(str_start, mcro->name);
+  *mcro_pos = '\0';
+  
+  strcpy(str_end, mcro_pos + strlen(mcro->name));
+  
+  new_str = handle_malloc((strlen(str_start) + strlen(mcro->content) + strlen(str_end) + 1) * sizeof(char));
+  if(new_str == NULL) return NULL;
+  
+  strcpy(new_str, str_start);
+  strcat(new_str, mcro->content);
+  strcat(new_str, str_end);
+  
+  return new_str;
+}
+
 int macro_exec(char file_name[]) {
   return 1;
 }

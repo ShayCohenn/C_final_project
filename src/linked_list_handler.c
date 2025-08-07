@@ -6,6 +6,18 @@
 #include "../headers/utils.h"
 #include "../headers/errors.h"
 
+node *make_node(char *name, char *content, int line) {
+  node *temp;
+  temp = handle_malloc(sizeof(node));
+  
+  temp->name = name;
+  temp->content = content;
+  temp->line = line;
+  temp->next = NULL;
+  
+  return temp;
+}
+
 node *search_ll(node *head, char *name, int found) {
   *found = 0;
   
@@ -54,5 +66,19 @@ void add_node_to_ll(node **head, char *name, char *content, int line) {
       *head = new_node;
     else
       temp->next = new_node;
+  }
+}
+
+void remove_node_from_ll(node *node01) {
+  free(node01->name);
+  free(node01->content);
+  free(node01);
+}
+
+void delete_ll(node *head) {
+  while(head != NULL) {
+    node *temp = head;
+    head = head->next;
+    remove_node_from_ll(temp);
   }
 }
