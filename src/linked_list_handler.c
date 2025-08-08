@@ -18,7 +18,7 @@ node *make_node(char *name, char *content, int line) {
   return temp;
 }
 
-node *search_ll(node *head, char *name, int found) {
+node *search_ll(node *head, char *name, int *found) {
   *found = 0;
   
   if(head == NULL) return NULL;
@@ -31,7 +31,7 @@ node *search_ll(node *head, char *name, int found) {
   
   if(head->next == NULL) return head;
   
-  return search_ll(head->next, bane, found);
+  return search_ll(head->next, name, found);
 }
 
 node *create_node(char *name, char *content, int line) {

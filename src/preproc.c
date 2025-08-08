@@ -9,7 +9,7 @@
 #include "../headers/utils.h"
 #include "../headers/text.h"
 
-int is_valid_macro(char *str, char **name, int line, char *file_name) {
+int is_valid_macro(char *str, char **macro_name, int line, char *file_name) {
   char *temp_name, *extra;
   temp_name = strtok(NULL, " \n");
   if (temp_name == NULL) {
@@ -30,7 +30,7 @@ int is_valid_macro(char *str, char **name, int line, char *file_name) {
   }
   
   *macro_name = handle_malloc((strlen(temp_name) + 1) * sizeof(char));
-  strcpy(*name, temp_name);
+  strcpy(*macro_name, temp_name);
   
   return 1;
 }
@@ -38,6 +38,7 @@ int is_valid_macro(char *str, char **name, int line, char *file_name) {
 char *macro_to_str(FILE *file, fpos_t *file_pos, int *line) {
   int macro_len;
   char str[MAX_LINE_SIZE];
+  char *mcro;
   if(fsetpos(file, file_pos) != 0) {
     report_internal_error(ERROR_CODE_5);
     return NULL;
@@ -61,7 +62,7 @@ char *macro_to_str(FILE *file, fpos_t *file_pos, int *line) {
 
 int add_macro(char *file_name, node **head) {
   int line, success;
-  FILE file;
+  FILE *file;
   fpos_t file_pos;
   char str[MAX_LINE_SIZE];
   char *name, *content;
@@ -93,10 +94,10 @@ int add_macro(char *file_name, node **head) {
       }
       
       fsetpos(file, &file_pos);
-      add_node_to_ll(head, name, content, macro_line;
+      add_node_to_ll(head, name, content, macro_line);
     }
   }
-  fclose(file, &file_pos);
+  fclose(file);
   return success;
 }
 
@@ -121,7 +122,7 @@ char *remove_macro_decleration(char file_name[]) {
   }
   while(fgets(str, MAX_LINE_SIZE, file)) {
     strcpy(str_cpy, str);
-    word = strtok(str, " \n";
+    word = strtok(str, " \n");
     if(word == NULL) {
       fprintf(output_file, "\n");
       continue;
@@ -131,7 +132,7 @@ char *remove_macro_decleration(char file_name[]) {
       while(strcmp(word, "endmcro") != 0) {
         fprintf(output_file, "\n");
         fgets(str, MAX_LINE_SIZE, file);
-        word = strtok(str, " \n";
+        word = strtok(str, " \n");
         
         while(word == NULL) {
           fprintf(output_file, "\n");
@@ -191,13 +192,13 @@ char *replace_all_macros(char file_name[], node *head) {
   mcro = head;
   while(mcro != NULL) {
     temp_file = fopen(temp_file_name, "r");
-    if(is_empty_file(*temp_file, "r") == 0) {
+    if(is_empty_file(temp_file, "r") == 0) {
       sudden_file_close(4, "%s", temp_file_name, "%s", final_file_name);
       return NULL;
     }
     
     final_file = fopen(final_file_name, "w");
-    if(is_empty_file(*final_file, "w") == 0) {
+    if(is_empty_file(final_file, "w") == 0) {
       sudden_file_close(6, "file", temp_file, "%s", temp_file_name, "%s", final_file_name);
       return NULL;
     }
@@ -271,7 +272,7 @@ int macro_exec(char file_name[]) {
   char *new_file1, *new_file2, *temp_file_name1, *temp_file_name2, *final_file;
   
   new_file1 = whitespace_remove_file(file_name);
-  if(new_file == NULL) return 0;
+  if(new_file1 == NULL) return 0;
   
   head = NULL;
   
@@ -300,15 +301,15 @@ int macro_exec(char file_name[]) {
   }
   
   temp_file_name1 = create_file(file_name, ".t01");
-  temp_file_name_2 = create_file(file_name, ".t02");
+  temp_file_name2 = create_file(file_name, ".t02");
   
   remove(temp_file_name1);
   remove(temp_file_name2);
   
-  free(temp_file_name_1);
-  free(temp_file_name_2);
+  free(temp_file_name1);
+  free(temp_file_name2);
   
-  free(new_file2)
+  free(new_file2);
   free(final_file);
   delete_ll(head);
    

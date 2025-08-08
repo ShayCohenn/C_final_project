@@ -8,7 +8,7 @@
 #include "../headers/globals.h"
 #include "../headers/utils.h"
 
-char *file_to_string(FILE *file, fpos_t file_pos, int len) {
+char *file_to_string(FILE *file, fpos_t *file_pos, int len) {
   int i;
   char *str;
   if(fsetpos(file, file_pos) != 0) {

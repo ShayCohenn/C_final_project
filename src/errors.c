@@ -5,7 +5,7 @@
 #include "../headers/errors.h"
 #include "../headers/globals.h"
 
-Error errors[] = {
+const Error errors[] = {
   {ERROR_CODE_0, "No Error"},
   {ERROR_CODE_1, "ERROR: Dynamic memory allocation failed."},
   {ERROR_CODE_2, "ERROR: Macro undefined."},

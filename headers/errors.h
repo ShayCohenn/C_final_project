@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include "globals.h"
+#include "utils.h"
 
 typedef struct Error {
   int error_id;

@@ -6,7 +6,7 @@ typedef struct opcode {
   int arg_num;
 } opcode;
 
-#define OPCODES_COUNT 16;
+#define OPCODES_COUNT 16
 extern opcode OPCODE[];
 
 typedef struct command_parts {
@@ -25,5 +25,7 @@ typedef struct inst_parts {
 } inst_parts;
 
 #define INSTRUCTION_COUNT 5
+
+#define REG_COUNT 8
 
 #endif
