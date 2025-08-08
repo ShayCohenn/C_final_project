@@ -174,7 +174,7 @@ char *replace_one_macro(char *str, node *mcro) {
 
 char *replace_all_macros(char file_name[], node *head) {
   node *mcro;
-  char *mcro_pos, *new_str, *temp_file_ad, *final_file_name;
+  char *mcro_pos, *new_str, *temp_file_name, *final_file_name;
   char *str[MAX_LINE_SIZE];
   FILE *temp_file, *final_file;
   
@@ -190,8 +190,127 @@ char *replace_all_macros(char file_name[], node *head) {
   
   mcro = head;
   while(mcro != NULL) {
+    temp_file = fopen(temp_file_name, "r");
+    if(is_empty_file(*temp_file, "r") == 0) {
+      sudden_file_close(4, "%s", temp_file_name, "%s", final_file_name);
+      return NULL;
+    }
+    
+    final_file = fopen(final_file_name, "w");
+    if(is_empty_file(*final_file, "w") == 0) {
+      sudden_file_close(6, "file", temp_file, "%s", temp_file_name, "%s", final_file_name);
+      return NULL;
+    }
+    
+    while(fgets(str, MAX_LINE_SIZE, temp_file)) {
+      mcro_pos = strstr(str, mcro->name);
+      if(mcro_pos != NULL) {
+        *(str + strlen(str) - 1) = '\0';
+        new_str = replace_one_macro(str, mcro);
+        if(new_str == NULL) {
+          sudden_file_close(8, "file", final_file, "file", temp_file, "%s", temp_file_name, "%s", final_file_name);
+          return NULL;
+        }
+        
+        fprintf(final_file, "%s", new_str);
+        free(new_str);
+      } else {
+        fprintf(final_file, "%s", str);
+      }
+    }
+    
+    fclose(temp_file);
+    fclose(final_file);
+    
+    mcro = mcro->next;
+    if(mcro == NULL) break;
+    
+    remove(temp_file_name);
+    rename(final_file_name, temp_file_name);
+  }
+  remove(temp_file_name);
+  free(temp_file_name);
+    
+  return final_file_name;
+}
+
+int check_macro_decl_order(char file_name[], node *head) {
+  FILE *file;
+  int line, valid;
+  node *mcro;
+  char str[MAX_LINE_SIZE];
+  
+  file = fopen(file_name, "r");
+  valid = 0;
+  line = 0;
+  while(fgets(str, MAX_LINE_SIZE, file) != NULL) {
+    line++;
+    if(strstr(str, "mcro") != NULL) continue;
+    mcro = head;
+    while((mcro != NULL) && (mcro->line < line)) {
+      mcro = mcro->next;
+    }
+    
+    if(mcro == NULL) continue;
+    
+    while (mcro != NULL) {
+      if(strstr(str, mcro->name) != NULL) {
+        report_internal_error(ERROR_CODE_14);
+        valid = 0;
+      }
+      mcro = mcro->next;
+    }
+  }
+  fclose(file);
+  return valid;
+}
     
 
 int macro_exec(char file_name[]) {
+  node *head;
+  char *new_file1, *new_file2, *temp_file_name1, *temp_file_name2, *final_file;
+  
+  new_file1 = whitespace_remove_file(file_name);
+  if(new_file == NULL) return 0;
+  
+  head = NULL;
+  
+  if(!add_macro(new_file1, &head)) {
+    delete_ll(head);
+    sudden_file_close(2, "%s", new_file1);
+    return 0;
+  }
+  
+  new_file2 = remove_macro_decleration(new_file2);
+  if(new_file2 == NULL) {
+    delete_ll(head);
+    sudden_file_close(2, "%s", new_file1);
+    report_internal_error(ERROR_CODE_13);
+    return 0;
+  }
+  
+  free(new_file1);
+  
+  final_file = replace_all_macros(new_file2, head);
+  if(final_file == NULL) {
+    delete_ll(head);
+    sudden_file_close(2, "%s", new_file2);
+    report_internal_error(ERROR_CODE_13);
+    return 0;
+  }
+  
+  temp_file_name1 = create_file(file_name, ".t01");
+  temp_file_name_2 = create_file(file_name, ".t02");
+  
+  remove(temp_file_name1);
+  remove(temp_file_name2);
+  
+  free(temp_file_name_1);
+  free(temp_file_name_2);
+  
+  free(new_file2)
+  free(final_file);
+  delete_ll(head);
+   
   return 1;
 }
