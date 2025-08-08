@@ -178,10 +178,19 @@ char *replace_all_macros(char file_name[], node *head) {
   char *str[MAX_LINE_SIZE];
   FILE *temp_file, *final_file;
   
-  temp_file_ad = create_file(file_name, ".tmp");
+  temp_file_name = create_file(file_name, ".tmp");
   final_file_name = create_file(file_name, ".am");
   
-  if(!
+  if(!copy_file(file_name, temp_file_name) || !copy_file(file_name, final_file_name)) {
+    report_internal_error(ERROR_CODE_12);
+    report_internal_error(ERROR_CODE_13);
+    sudden_file_close(4, "%s", temp_file_name, "%s", final_file_name);
+    return NULL;
+  }
+  
+  mcro = head;
+  while(mcro != NULL) {
+    
 
 int macro_exec(char file_name[]) {
   return 1;
