@@ -24,6 +24,24 @@ typedef struct inst_parts {
   int is_extern;
 } inst_parts;
 
+int opcode_index(char *str);
+int is_inst(char *str);
+int reg_index(char *str);
+int valid_line_len(char *file_name);
+inst_parts *read_extern_entry(char *str, int *err_code);
+int valid_label(char *str);
+int extra_text();
+inst_parts *read_inst(char *str, int *err_code);
+int add_space_after_colon(char **str, int *err_code);
+int valid_label_decl(char *str, int *err_code);
+int save_nums_to_arr(char *str, char *token_cpy, inst_parts *inst, int *err_code);
+int str_to_shorts_arr(char *str, inst_parts *inst, int *err_code);
+int valid_str(const char *str);
+int inc_array_size(inst_parts **inst, int len);
+int comma_after_str(char *str, int *err_code);
+
+
+
 #define INSTRUCTION_COUNT 5
 
 #define REG_COUNT 8
