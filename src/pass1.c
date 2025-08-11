@@ -7,7 +7,7 @@
 #include "../headers/lexer.h"
 #include "../headers/globals.h"
 #include "../headers/errors.h"
-
+#include "../headers/code_handler.h"
 
 int handle_memory_alloc(symbol_table **externs, symbol_table **entries, conv_code **code, conv_code **data) {
   int err = 0;
@@ -91,7 +91,7 @@ int pass1_exe(char *file_name) {
           continue;
         } else {
           if(inst_created) {
-            if(add_machine_code_data(&data, inst, &DC, am_file) == 0) {/*not implemented yet*/
+            if(add_machine_code_data(&data, inst, &DC, am_file) == 0) {
               err_found = 1;
               continue;
             }
@@ -101,7 +101,8 @@ int pass1_exe(char *file_name) {
           if(inst->nums) free(inst->nums);
           free(inst);
         }
-      }
+      } else {
+        command = read_command(str, &err_code);
     }
   }
 }

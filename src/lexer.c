@@ -302,8 +302,6 @@ inst_parts *read_inst(char *str, inst *err_code) {
   
   return inst;
 }
-    
-    
 
 inst_parts *read_extern_entry(char *str, int *err_code) {
   inst_parts *inst;
@@ -334,4 +332,50 @@ inst_parts *read_extern_entry(char *str, int *err_code) {
   
   return inst;
 }
+
+int opcode_error_check(char *str) {
+  char *c;
+  if((c = strchr(str, ',')) != NULL) return ERROR_CODE_26;
+  return ERROR_CODE_27;
+}
+
+int is_valid_arg(char *str, command_parts *command, int *err_code) {
+  char *ptr, *str1, *str2;
+  
+  if(str == NULL && OPCODES[command->opcode].arg_num != 0 {
+    *err_code = ERROR_CODE_29;
+    return 0;
+  }
+
+int *read_command(char *str, int *err_code) {
+  char *token;
+  int flag;
+  
+  flag = 0;
+  command_parts *command = handle_malloc(sizeof(command_parts));
+  
+  if(command == NULL) return command;
+  
+  if(!add_space_after_colon(&str, err_code)) return command;
+  
+  token = strtok(str, " \n");
+  if(valid_label_decl(token, err_code)) {
+    flag = 1;
+    command->label = token;
+    token = strtok(NULL, " \n");
+    if((command->opcode = opcode_index(token)) != -1) { ; }
+    else {
+      *err_code = opcode_error_check(token);
+      command->opcode = -1;
+      return command;
+    }
+    
+    if(OPCODES[command->opcode].arg_num == 0) {
+      if(extra_text()) *err_code = ERROR_CODE_28;
+      else {
+      command->source = NULL;
+      command->dest = NULL;
+      }
+    } else {
+      if(
   

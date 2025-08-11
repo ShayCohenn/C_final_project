@@ -31,7 +31,11 @@ const Error errors[] = {
   {ERROR_CODE_22, "ERROR: .string syntax error - may contain extra text after string end."},
   {ERROR_CODE_23, "ERROR: Illegal label after \".entry\"."},
   {ERROR_CODE_24, "ERROR: Invalid comma location."},
-  {ERROR_CODE_25, "ERROR: Illegal data line directive."}
+  {ERROR_CODE_25, "ERROR: Illegal data line directive."},
+  {ERROR_CODE_26, "ERROR: Syntax error - illegal comma near opcode."},
+  {ERROR_CODE_27, "ERROR: Illegal opcode."},
+  {ERROR_CODE_28, "ERROR: Line contains extra text."},
+  {ERROR_CODE_29, "ERROR: Missing arguments"}
 };
 
 void report_internal_error(int error_code) {
