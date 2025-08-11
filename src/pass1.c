@@ -103,6 +103,17 @@ int pass1_exe(char *file_name) {
         }
       } else {
         command = read_command(str, &err_code);
+        if(err_code == 0) {
+          IC++;
+          if(command != NULL && command->label != NULL)
+            insert_labels_table(&label_table, ++label_table_line, command->label, IC, am_file, &err_code);
+        } else {
+          report_external_error(err_code, am_file);
+          free(command);
+          err_found = 1;
+          continue;
+        }
+        
     }
   }
 }

@@ -331,12 +331,24 @@ inst_parts *read_extern_entry(char *str, int *err_code) {
   if(extra_text()) *err_code = ERROR_CODE_16;
   
   return inst;
-}
+}  
 
 int opcode_error_check(char *str) {
   char *c;
   if((c = strchr(str, ',')) != NULL) return ERROR_CODE_26;
   return ERROR_CODE_27;
+}
+
+int label_reg_or_num(char *str) {
+  return ((reg_index(first_arg) >= 0) || (valid_label(first_arg)) || (is_int(first_arg)));
+}
+
+int check_first_arg(char *str, char *ptr) {
+  int first_arg_llen = (int)(ptr-str);
+  char first_arg[MAX_LINE_SIZE];
+  strncpy(first_arg, str, first_arg_len);
+  first_arg[first_arg_len] = '\0';
+  return ((reg_index(first_arg) >= 0) || (valid_label(first_arg)) || (is_int(first_arg)));
 }
 
 int is_valid_arg(char *str, command_parts *command, int *err_code) {
@@ -346,6 +358,65 @@ int is_valid_arg(char *str, command_parts *command, int *err_code) {
     *err_code = ERROR_CODE_29;
     return 0;
   }
+  if(OPCODES[command->opcode].arg_num == 0) {
+    if(extra_text()) {
+      *err_code = ERROR_CODE_28;
+      return 0;
+    } else {
+      command->source = NULL;
+      command->dest = NULL;
+      return 1;
+    }
+  }
+  
+  if(OPCODES[command->opcode].arg_num == 2) {
+    if(strstr(str, ",") == NULL) {
+      *err_code = ERROR_CODE_30;
+      return 0;
+    } else if(count_char_in_str(str, ',') {
+        *err_code = CODE_ERROR_31;
+        return 0;
+    } else {
+      str1 = strtok(str,",");
+      if((ptr = strchr(str1, ' '))) {
+        if(check_first_arg(str1, ptr)) {
+          *err_code = ERROR_CODE_33;
+          return 0;
+        }
+        *err_code = ERROR_CODE_34;
+        return 0;
+      }
+      str2 = strtok(NULL, " \n");
+      if(extra_text()) {
+        *err_code = ERROR_CODE_35;
+        return 0;
+      }
+    }
+  }
+  else if(OPCODES[command->opcode].arg_num == 1) {
+    if(strchr(str, ' ')) {
+      *err_code = ERROR_CODE_35;
+      return 0;
+    }
+  }
+  
+  switch(command->opcode) {
+    case 1: {
+      if(label_reg_or_num(str1) && label_reg_or_num(str2)) {
+        command->source = str1;
+        command->dest = str2;
+      } else {
+        if(str2 == NULL) *err_code = ERROR_CODE_29;
+        else if(reg_index(str1) == -1 || reg_index(str2) == -1) *err_code = ERROR_CODE_36;
+        else *err_code = ERROR_CODE_37;
+        return 0;
+      }
+      break;
+    }
+  }
+  return 1;
+}
+      
 
 int *read_command(char *str, int *err_code) {
   char *token;
@@ -377,5 +448,23 @@ int *read_command(char *str, int *err_code) {
       command->dest = NULL;
       }
     } else {
-      if(
-  
+      if(is_valid_arg(strtok(NULL, "\n"), command, err_code) == 0) return command;
+    }
+  }
+  else {
+    if(*err_code) return command;
+  }
+  if(!flag) {
+    if((command->opcode = opcode_index(token)) != -1) {
+      command->label = NULL;
+      is_valid_arg(strtok(NULL, "\n"), command, err_code);
+      return command;
+    } else {
+      *err_code = opcode_error_check(token);
+      command->opcode = -1;
+      return command;
+    }
+  } else {
+    return command;
+  }
+}

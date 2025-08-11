@@ -7,6 +7,18 @@
 #include "../headers/errors.h"
 #include "../headers/globals.h"
 
+int count_char_in_str(char *str, char check) {
+  int count;
+  char *ptr;
+  ptr = str;
+  count = 0;
+  while((*ptr != '\0') && (ptr = strchr(ptr, check)) != NULL) {
+    count++;
+    ptr++;
+  }
+  return count;
+}
+
 int is_whitespace(char c) {
   return (isspace(c) && c != '\n');
 }
