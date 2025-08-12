@@ -23,7 +23,7 @@ int opcode_index(char *str) {
   if(str == NULL) return -1;
   
   for(i = 0;i < OPCODES_COUNT;i++) {
-    if(strcmp(str, OPCODE[i].opcode) == 0)
+    if(strcmp(str, OPCODES[i].opcode) == 0)
       return i;
   }
   return -1;
