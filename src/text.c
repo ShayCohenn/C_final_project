@@ -74,7 +74,7 @@ void whitespace_remove_str(char str[]) {
 
 char *whitespace_remove_file(char file_name[]) {
   char *new_file_name;
-  char str[MAX_LINE_SIZE];
+  char str[MAX_LINE_SIZE + 2];
   int line;
   FILE *file, *file_temp;
   file = fopen(file_name, "r");
@@ -83,7 +83,7 @@ char *whitespace_remove_file(char file_name[]) {
     return NULL;
   }
   
-  new_file_name = add_new_file(file_name, ".t01");
+  new_file_name = create_file(file_name, ".t01");
   if(new_file_name == NULL) {
     sudden_file_close(2, "file", file);
     return NULL;
@@ -102,13 +102,13 @@ char *whitespace_remove_file(char file_name[]) {
     if(strlen(str) > MAX_LINE_SIZE) {
       location as_file;
       as_file.file_name = file_name;
-      as_file.line_num = line;
+      as_file.line = line;
       report_external_error(ERROR_CODE_8, as_file);
       fclose(file);
       fclose(file_temp);
       return NULL;
     }
-    else if (*str == ";") {
+    else if (*str == ';') {
       *str = '\n';
       *(str+1) = '\0';
     } else {
@@ -120,4 +120,18 @@ char *whitespace_remove_file(char file_name[]) {
   fclose(file_temp);
   
   return new_file_name;
-}  
+} 
+
+char *copy_text(FILE *file, fpos_t *pos, int len) {
+  int i;
+  char *str;
+  if(fsetpos(file, pos) != 0) return NULL;
+  
+  str = handle_malloc((len+1) * sizeof(char));
+  for(i = 0; i < len; i++) {
+    *(str+i) = getc(file);
+  }
+  *(str+i) = '\0';
+  fgetpos(file, pos);
+  return str;
+}

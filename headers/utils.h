@@ -11,5 +11,6 @@ int is_int(char *str);
 int copy_file(char *original_file_name, char *new_file_name);
 int is_empty_file(FILE *file, char *mode);
 int count_char_in_str(char *str, char check);
+int combine_bits(unsigned short a , unsigned short b, unsigned short c);
 
 #endif

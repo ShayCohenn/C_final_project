@@ -27,10 +27,14 @@ int insert_labels(symbol_table **table, inst_parts *inst, location am_file, int 
   strcpy((*table + count - 1)->name, inst->arg_label);
   
   *table = realloc(*table, (count + 1) * sizeof(symbol_table));
-  if(table == NULL {
+  if(table == NULL) {
     *err_code = ERROR_CODE_1;
     free(ptr);
     return 0;
   }
   return 1;
+}
+
+int insert_label_table(symbol_address **label_table, int lines, char *label, int count, location am_file, int is_data_line, int *err_code) {
+  return 0;
 }

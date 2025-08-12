@@ -11,6 +11,20 @@
 #define MAX_NUM ((1 << (BITS-1)) - 1)
 #define MIN_NUM (-(1 << (BITS-1)))
 
+#define DIRECT_ADDRESSING 0
+#define LABEL_ADDRESSING 1
+#define MAT_ADDRESSING 2
+#define REG_ADDRESSING 3
+
+#define SRC_BITS_SHIFT 4
+#define DEST_BITS_SHIFT 2
+#define OPCODE_BITS_SHIFT 6
+
+#define REG_SRC_BITS_SHIFT 6
+#define REG_DEST_BITS_SHIFT 2
+
+#define ARE_BITS 2
+
 
 typedef struct location {
   char *file_name;

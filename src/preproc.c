@@ -16,10 +16,10 @@ int is_valid_macro(char *str, char **macro_name, int line, char *file_name) {
     report_internal_error(ERROR_CODE_2);
     return 0;
   }
-  if(is_instrument(temp_name) || opcode_index(temp_name) >= 0 || reg_index(temp_name) >= 0) {
+  if(is_inst(temp_name) || opcode_index(temp_name) >= 0 || reg_index(temp_name) >= 0) {
     location as_file;
     as_file.file_name = file_name;
-    as_file.line_num = line;
+    as_file.line = line;
     report_external_error(ERROR_CODE_3, as_file);
     return 0;
   }
@@ -176,7 +176,7 @@ char *replace_one_macro(char *str, node *mcro) {
 char *replace_all_macros(char file_name[], node *head) {
   node *mcro;
   char *mcro_pos, *new_str, *temp_file_name, *final_file_name;
-  char *str[MAX_LINE_SIZE];
+  char str[MAX_LINE_SIZE];
   FILE *temp_file, *final_file;
   
   temp_file_name = create_file(file_name, ".tmp");
@@ -282,7 +282,7 @@ int macro_exec(char file_name[]) {
     return 0;
   }
   
-  new_file2 = remove_macro_decleration(new_file2);
+  new_file2 = remove_macro_decleration(new_file1);
   if(new_file2 == NULL) {
     delete_ll(head);
     sudden_file_close(2, "%s", new_file1);

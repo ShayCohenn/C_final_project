@@ -17,6 +17,7 @@ typedef struct symbol_address {
 } symbol_address;
 
 int insert_labels(symbol_table **table, inst_parts *inst, location am_file, int count, int *err_code);
+int insert_label_table(symbol_address **label_table, int lines, char *label, int count, location am_file, int is_data_line, int *err_code);
 
 
 #endif

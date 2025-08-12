@@ -37,6 +37,50 @@ int add_machine_code_line(conv_code **code, unsigned short num, char *str, int *
   return 1;
 }
 
+unsigned short reg_to_binary(command_parts *command, int reg_src) {
+  static int done;
+  int reg1, reg2;
+  unsigned short reg_src_num, reg_dest_num;
+  reg_src_num = 0;
+  reg_dest_num = 0;
+  if(reg_src) {
+    if((reg1 = reg_index(command->source)) >= 0)
+      reg_src_num = reg1 << REG_SRC_BITS_SHIFT;
+    if((reg2 = reg_index(command->dest)) >= 0)
+      reg_dest_num = reg2 << REG_DEST_BITS_SHIFT;
+    done = 1;
+    return combine_bits(reg_src_num, reg_dest_num, 0);
+  }
+  else if(done == 0) {
+    if((reg2 = reg_index(command->dest)) >= 0)
+      reg_dest_num = reg2 << REG_DEST_BITS_SHIFT;
+    return reg_dest_num;
+  }
+  done = 0;
+  return -1;
+}
+
+int add_extra_machine_code_line(conv_code **code, command_parts *command, location am_file, int *IC, int is_src) {
+  unsigned short num;
+  char *arg;
+  
+  arg = (is_src) ? command->source : command->dest;
+  if(reg_index(arg) > 0 && (num = reg_to_binary(command, is_src)) != -1) {
+    (*IC)++;
+    if(add_machine_code_line(code, num, NULL, IC, am_file) == 0) return 0;
+  }
+  else if(valid_label(arg)) {
+    (*IC)++;
+    if(add_machine_code_line(code, 2, arg, IC, am_file) == 0) return 0;
+  }
+  else if(is_int(arg)) {
+    (*IC)++;
+    if(add_machine_code_line(code, atoi(arg) << ARE_BITS, NULL, IC, am_file) == 0) return 0;
+  }
+  return 1;
+}
+    
+
 int add_machine_code_data(conv_code **data, inst_parts *inst, int *DC, location am_file) {
   int i, inst_len;
   inst_len = inst->len;
@@ -50,4 +94,32 @@ int add_machine_code_data(conv_code **data, inst_parts *inst, int *DC, location 
   }
   return 1;
 }
+
+short command_to_binary(command_parts *command) {
+  unsigned short src, opc, dest;
+  src = 0;
+  opc = 0;
+  dest = 0;
   
+  if(is_int(command->source))
+    src = (short)(DIRECT_ADDRESSING << SRC_BITS_SHIFT);
+  else if(valid_label(command->source))
+    src = (short)(LABEL_ADDRESSING << SRC_BITS_SHIFT);
+  else if(valid_mat(command->source))
+    src = (short)(MAT_ADDRESSING << SRC_BITS_SHIFT);
+  else if(reg_index(command->source) >= 0)
+    src = (short)(REG_ADDRESSING << SRC_BITS_SHIFT);
+  
+  if(is_int(command->dest))
+    dest = (short)(DIRECT_ADDRESSING << DEST_BITS_SHIFT);
+  else if(valid_label(command->dest))
+    dest = (short)(LABEL_ADDRESSING << DEST_BITS_SHIFT);
+  else if(valid_mat(command->dest))
+    dest = (short)(MAT_ADDRESSING << DEST_BITS_SHIFT);
+  else if(reg_index(command->dest))
+    dest = (short)(REG_ADDRESSING << DEST_BITS_SHIFT);
+    
+  opc = (short)((command->opcode) << OPCODE_BITS_SHIFT);
+  
+  return combine_bits(opc, src, dest);
+}

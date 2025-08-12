@@ -6,6 +6,7 @@
 #include "../headers/lexer.h"
 #include "../headers/globals.h"
 #include "../headers/utils.h"
+#include "../headers/errors.h"
 
 char *REGS[] = {"r0","r1","r2","r3","r4","r5","r6","r7"};
 char *INSTRUCTIONS[] = {".data", ".string", ".mat", ".entry", ".extern"};
@@ -74,7 +75,7 @@ int valid_label(char *str) {
   if(str == NULL) return 0;
   
   if(isalpha(*str) && opcode_index(str) < 0 && strlen(str) <= MAX_LABEL_SIZE && !is_inst(str)) {
-    while(*(++str) != '\0' && *(str) != ' ' && (isalpha(*str) || is_digit(*str))) { ; }
+    while(*(++str) != '\0' && *(str) != ' ' && (isalpha(*str) || isdigit(*str))) { ; }
   }
   
   if(*str == '\0' || *str == ' ') return 1;
@@ -155,7 +156,7 @@ int valid_str(const char *str) {
 int inc_array_size(inst_parts **inst, int len) {
   short *ptr;
   ptr = (*inst)->nums;
-  (inst)->nums = realloc((*inst)->nums, (len+1) * sizeof(short));
+  (*inst)->nums = realloc((*inst)->nums, (len+1) * sizeof(short));
   if((*inst)->nums == NULL) {
     report_internal_error(ERROR_CODE_1);
     free(ptr);
@@ -205,15 +206,20 @@ int str_to_shorts_arr(char *str, inst_parts *inst, int *err_code) {
   int flag, len;
   char *token;
   
-  len = inst-<len = 0;
+  len = inst->len = 0;
   
   if(*(token = strtok(NULL, "\n")) != '"') {
     *err_code = ERROR_CODE_21;
     return 0;
   }
+  
+  if(strchr(token, '"') == NULL) {
+    *err_code = ERROR_CODE_21;
+    return 0;
+  }
   flag = 0;
   while(*(token+len) != '"') {
-    if(inc_array_size(&inst, ++len) == 0 return 0;
+    if(inc_array_size(&inst, ++len) == 0) return 0;
     *(inst->nums + len - 1) = (short)(*(token + len - 1));
     flag = 1;
   }
@@ -239,7 +245,7 @@ int comma_after_str(char *str, int *err_code) {
   return 0;
 }
 
-inst_parts *read_inst(char *str, inst *err_code) {
+inst_parts *read_inst(char *str, int *err_code) {
   inst_parts *inst;
   char *token;
   char token_cpy[MAX_LINE_SIZE];
@@ -340,21 +346,25 @@ int opcode_error_check(char *str) {
 }
 
 int label_reg_or_num(char *str) {
-  return ((reg_index(first_arg) >= 0) || (valid_label(first_arg)) || (is_int(first_arg)));
+  return ((reg_index(str) >= 0) || (valid_label(str)) || (is_int(str)));
 }
 
 int check_first_arg(char *str, char *ptr) {
-  int first_arg_llen = (int)(ptr-str);
+  int first_arg_len = (int)(ptr-str);
   char first_arg[MAX_LINE_SIZE];
   strncpy(first_arg, str, first_arg_len);
   first_arg[first_arg_len] = '\0';
   return ((reg_index(first_arg) >= 0) || (valid_label(first_arg)) || (is_int(first_arg)));
 }
 
+int valid_mat(char *str) {
+  return 0;
+}
+
 int is_valid_arg(char *str, command_parts *command, int *err_code) {
   char *ptr, *str1, *str2;
   
-  if(str == NULL && OPCODES[command->opcode].arg_num != 0 {
+  if(str == NULL && OPCODES[command->opcode].arg_num != 0) {
     *err_code = ERROR_CODE_29;
     return 0;
   }
@@ -373,8 +383,8 @@ int is_valid_arg(char *str, command_parts *command, int *err_code) {
     if(strstr(str, ",") == NULL) {
       *err_code = ERROR_CODE_30;
       return 0;
-    } else if(count_char_in_str(str, ',') {
-        *err_code = CODE_ERROR_31;
+    } else if(count_char_in_str(str, ',')) {
+        *err_code = ERROR_CODE_31;
         return 0;
     } else {
       str1 = strtok(str,",");
@@ -418,12 +428,13 @@ int is_valid_arg(char *str, command_parts *command, int *err_code) {
 }
       
 
-int *read_command(char *str, int *err_code) {
+command_parts *read_command(char *str, int *err_code) {
   char *token;
   int flag;
+  command_parts *command;
   
   flag = 0;
-  command_parts *command = handle_malloc(sizeof(command_parts));
+  command = handle_malloc(sizeof(command_parts));
   
   if(command == NULL) return command;
   

@@ -39,11 +39,12 @@ int str_to_shorts_arr(char *str, inst_parts *inst, int *err_code);
 int valid_str(const char *str);
 int inc_array_size(inst_parts **inst, int len);
 int comma_after_str(char *str, int *err_code);
-int *read_command(char *str, int *err_code);
+command_parts *read_command(char *str, int *err_code);
 int opcode_error_check(char *str);
 int is_valid_arg(char *str, command_parts *command, int *err_code);
 int check_first_arg(char *str, char *ptr);
 int label_reg_or_num(char *str);
+int valid_mat(char *str);
 
 
 

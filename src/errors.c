@@ -41,7 +41,7 @@ const Error errors[] = {
   {ERROR_CODE_33, "ERROR: Invalid first argument."},
   {ERROR_CODE_34, "ERROR: Unknown argument related error."},
   {ERROR_CODE_35, "ERROR: Extra text after arguments."},
-  {ERROR_CDOE_36, "ERROR: Invalid register name."},
+  {ERROR_CODE_36, "ERROR: Invalid register name."},
   {ERROR_CODE_37, "ERROR: Invalid argument."}
 };
 
@@ -50,5 +50,5 @@ void report_internal_error(int error_code) {
 }
 
 void report_external_error(int error_code, location file) {
-  printf("ERROR:\n ID:%d in %s at line:%d | %s", error_code, file.file_name, file.line_num, errors[error_code].error_msg);
+  printf("ERROR:\n ID:%d in %s at line:%d | %s", error_code, file.file_name, file.line, errors[error_code].error_msg);
 }

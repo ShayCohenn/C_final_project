@@ -7,6 +7,10 @@
 #include "../headers/errors.h"
 #include "../headers/globals.h"
 
+int combine_bits(unsigned short a, unsigned short b, unsigned short c) {
+  return ((a | b) | c);
+}
+
 int count_char_in_str(char *str, char check) {
   int count;
   char *ptr;

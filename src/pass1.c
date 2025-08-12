@@ -10,12 +10,11 @@
 #include "../headers/code_handler.h"
 
 int handle_memory_alloc(symbol_table **externs, symbol_table **entries, conv_code **code, conv_code **data) {
-  int err = 0;
-  
-  *externs = handle_malloc(sizeof(symbol_map));
+   
+  *externs = handle_malloc(sizeof(symbol_table));
   if(*externs == NULL) return 1;
   
-  *entries = handle_malloc(sizeof(symbol_map));
+  *entries = handle_malloc(sizeof(symbol_table));
   if(*entries == NULL) return 1;
   
   *code = handle_malloc(sizeof(conv_code));
@@ -30,24 +29,24 @@ int handle_memory_alloc(symbol_table **externs, symbol_table **entries, conv_cod
 int pass1_exe(char *file_name) {
   int IC, DC, err_code, err_found, label_table_line, externs_count, entries_count, inst_created = 1;
   
-  char *str[MAX_LINE_SIZE];
-  char *str_cpy[MAX_LINE_SIZE];
+  char str[MAX_LINE_SIZE];
+  char str_cpy[MAX_LINE_SIZE];
   symbol_table *externs, *entries;
   conv_code *code, *data;
   command_parts *command;
   inst_parts *inst;
   location am_file;
   
+  FILE *file;
+  symbol_address *label_table;
+  
   err_code = 0;
   err_found = 0;
   
-  label_map_line = 0;
+  label_table_line = 0;
   externs_count = 0;
   entries_count = 0;
-  label_map = NULL;
-  
-  FILE *file;
-  symbol_address *label_table;
+  label_table = NULL;
   
   if(!valid_line_len(file_name)) err_found = 1;
   
@@ -79,7 +78,7 @@ int pass1_exe(char *file_name) {
         inst = read_inst(str_cpy, &err_code);
         if(inst->label != NULL)
           insert_label_table(&label_table, ++label_table_line, inst->label, DC, am_file, 1, &err_code);
-        else {
+        } else {
           inst_created = 0;
           err_code = ERROR_CODE_25;
         }
@@ -106,14 +105,27 @@ int pass1_exe(char *file_name) {
         if(err_code == 0) {
           IC++;
           if(command != NULL && command->label != NULL)
-            insert_labels_table(&label_table, ++label_table_line, command->label, IC, am_file, &err_code);
+            insert_label_table(&label_table, ++label_table_line, command->label, IC, am_file, 0, &err_code);
         } else {
           report_external_error(err_code, am_file);
           free(command);
           err_found = 1;
           continue;
         }
-        
+        if(add_machine_code_line(&code, command_to_binary(command), NULL, &IC, am_file) == 0) {
+          free(command);
+          err_found = 1;
+          continue;
+        }
+        if(add_extra_machine_code_line(&code, command, am_file, &IC, 1) == 0 || add_extra_machine_code_line(&code, command, am_file, &IC, 0) == 0) {
+          free(command);
+          err_found = 1;
+          continue;
+        }
+        free(command);
+      }
     }
-  }
+    /*second pass*/
+  fclose(file);
+  return err_found;
 }
