@@ -38,7 +38,7 @@ char *create_file(char *file_name, char *file_suff) {
   char *c, *new_file_name;
   new_file_name = handle_malloc(MAX_LINE_SIZE * sizeof(char));
   strcpy(new_file_name, file_name);
-  if((c = strchr(new_file_name, '.')) != NULL)
+  if((c = strrchr(new_file_name, '.')) != NULL)
     *c = '\0';
   strcat(new_file_name, file_suff);
   return new_file_name;
@@ -80,9 +80,9 @@ int is_empty_file(FILE *file, char *mode) {
       report_internal_error(ERROR_CODE_11);
     else if(strcmp(mode, "w"))
       report_internal_error(ERROR_CODE_7);
-    return 0;
+    return 1;
   }
-  return 1;
+  return 0;
 }
 
 int copy_file(char *original_file_name, char *new_file_name) {

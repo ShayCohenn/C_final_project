@@ -383,7 +383,7 @@ int is_valid_arg(char *str, command_parts *command, int *err_code) {
     if(strstr(str, ",") == NULL) {
       *err_code = ERROR_CODE_30;
       return 0;
-    } else if(count_char_in_str(str, ',')) {
+    } else if(count_char_in_str(str, ',') > 1) {
         *err_code = ERROR_CODE_31;
         return 0;
     } else {

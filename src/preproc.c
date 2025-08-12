@@ -192,7 +192,7 @@ char *replace_all_macros(char file_name[], node *head) {
   mcro = head;
   while(mcro != NULL) {
     temp_file = fopen(temp_file_name, "r");
-    if(is_empty_file(temp_file, "r") == 0) {
+    if(is_empty_file(temp_file, "r")) {
       sudden_file_close(4, "%s", temp_file_name, "%s", final_file_name);
       return NULL;
     }

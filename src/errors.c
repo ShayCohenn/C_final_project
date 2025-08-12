@@ -37,6 +37,7 @@ const Error errors[] = {
   {ERROR_CODE_28, "ERROR: Line contains extra text."},
   {ERROR_CODE_29, "ERROR: Missing arguments"},
   {ERROR_CODE_30, "ERROR: Missing comma between 2 aeguments."},
+  {ERROR_CODE_31, "ERROR: Unknown error."},
   {ERROR_CODE_32, "ERROR: Syntax error - too many commas."},
   {ERROR_CODE_33, "ERROR: Invalid first argument."},
   {ERROR_CODE_34, "ERROR: Unknown argument related error."},
