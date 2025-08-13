@@ -242,7 +242,6 @@ int str_to_shorts_arr(char *str, inst_parts *inst, int *err_code) {
   if(*after != '\0'){
     printf("inside if: %s\n", (token+len+1));
     *err_code = ERROR_CODE_22;
-    /*if(flag == 1) free(inst->nums);*/
     return 0;
   }
   if(inc_array_size(&inst, len+1) == 0) return 0;
