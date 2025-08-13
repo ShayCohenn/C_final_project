@@ -204,35 +204,53 @@ int save_nums_to_arr(char *str, char *token_cpy, inst_parts *inst, int *err_code
 
 int str_to_shorts_arr(char *str, inst_parts *inst, int *err_code) {
   int flag, len;
-  char *token;
+  char *token, *after;
   
   len = inst->len = 0;
+  inst->nums = NULL;
   
-  if(*(token = strtok(NULL, "\n")) != '"') {
+  token = strtok(NULL, "\n");
+  if(!token) {
     *err_code = ERROR_CODE_21;
     return 0;
   }
-  
+    
+  while(*token && isspace((unsigned char)*token)) token++;
+  if(*token != '"') {
+    *err_code = ERROR_CODE_21;
+    return 0;
+  }
+  token++;
   if(strchr(token, '"') == NULL) {
     *err_code = ERROR_CODE_21;
     return 0;
   }
+  
   flag = 0;
+  printf("Starting loop\ntoken:%s\ntoken+len:%s\n", token, token+len);
   while(*(token+len) != '"') {
+  printf("looping %d\n token+len:%s\n", len, token+len);
     if(inc_array_size(&inst, ++len) == 0) return 0;
     *(inst->nums + len - 1) = (short)(*(token + len - 1));
+    printf("inst->nums %hn\n", inst->nums);
     flag = 1;
   }
-  
-  if(!(*(token+len+1) == '\0' || *(token+len+1) == '\n')) {
+  printf("ended loop\n%s\n", token+len+1);
+  after = token + len + 1;
+  while(*after && isspace((unsigned char)*after)) after++;
+  printf("after: %s\n", after);
+  if(*after != '\0'){
+    printf("inside if: %s\n", (token+len+1));
     *err_code = ERROR_CODE_22;
-    if(flag == 1) free(inst->nums);
+    /*if(flag == 1) free(inst->nums);*/
     return 0;
   }
-  if(inc_array_size(&inst, ++len) == 0) return 0;
+  if(inc_array_size(&inst, len+1) == 0) return 0;
   
-  *(inst->nums + len - 1) = 0;
-  inst->len = len;
+  *(inst->nums + len) = 0;
+  
+  inst->len = len + 1;
+  printf("inst->len = %d, len = %d, inst->nums = %hn\n", inst->len, len, inst->nums);
   return 1;
 }
 
