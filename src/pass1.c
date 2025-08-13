@@ -27,7 +27,7 @@ int handle_memory_alloc(symbol_table **externs, symbol_table **entries, conv_cod
 }
 
 int pass1_exe(char *file_name) {
-  int IC, DC, err_code, err_found, label_table_line, externs_count, entries_count, inst_created = 1;
+  int IC, DC, err_code, err_found, label_table_line, externs_count, entries_count, inst_created;
   
   char str[MAX_LINE_SIZE];
   char str_cpy[MAX_LINE_SIZE];
@@ -51,6 +51,10 @@ int pass1_exe(char *file_name) {
   if(!valid_line_len(file_name)) err_found = 1;
   
   file = fopen(file_name, "r");
+  if(!file) {
+    report_internal_error(ERROR_CODE_11);
+    return 0;
+  }
   am_file.file_name = file_name;
   am_file.line = 0;
   
@@ -61,6 +65,7 @@ int pass1_exe(char *file_name) {
   
   while(fgets(str, MAX_LINE_SIZE, file) != NULL && IC + DC <= MAX_IC - IC_INIT_VAL) {
     err_code = 0;
+    inst_created = 0;
     (am_file.line)++;
     if(strcmp(str, "\n") == 0) continue;
     
@@ -68,14 +73,27 @@ int pass1_exe(char *file_name) {
       strcpy(str_cpy, str);
       if(strstr(str_cpy, ".entry") || strstr(str_cpy, ".extern")) {
         inst = read_extern_entry(str_cpy, &err_code);
+        if(!inst) {
+          if(err_code) report_external_error(err_code, am_file);
+          err_found = 1;
+          continue;
+        }
         
         if(inst->is_extern == 0)
           insert_labels(&entries, inst, am_file, ++entries_count, &err_code);
         else if(inst->is_extern == 1)
           insert_labels(&externs, inst, am_file, ++externs_count, &err_code);
-      } 
+        free(inst);
+        continue;
+      }
       else if(strstr(str_cpy, ".data") != NULL || strstr(str_cpy, ".string") != NULL || strstr(str_cpy, ".mat")) {
         inst = read_inst(str_cpy, &err_code);
+        if(!inst) {
+          if(err_code) report_external_error(err_code, am_file);
+          err_found = 1;
+          continue;
+        }
+        inst_created = 1;
         if(inst->label != NULL)
           insert_label_table(&label_table, ++label_table_line, inst->label, DC, am_file, 1, &err_code);
         } else {

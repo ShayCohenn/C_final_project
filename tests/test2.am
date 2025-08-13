@@ -1,5 +1,9 @@
 
-mcro abc
+
+
+
+
+MAIN: mov #1,r3
 mov r1,r2
 prn #2
 mcroend

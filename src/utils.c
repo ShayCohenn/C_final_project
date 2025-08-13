@@ -33,7 +33,7 @@ void *handle_malloc(long obj_size) {
     report_internal_error(ERROR_CODE_1);
   return obj_ptr;
 }
-
+/*
 char *create_file(char *file_name, char *file_suff) {
   char *c, *new_file_name;
   new_file_name = handle_malloc(MAX_LINE_SIZE * sizeof(char));
@@ -41,6 +41,19 @@ char *create_file(char *file_name, char *file_suff) {
   if((c = strrchr(new_file_name, '.')) != NULL)
     *c = '\0';
   strcat(new_file_name, file_suff);
+  return new_file_name;
+}*/
+
+char *create_file(const char *file_name, const char *file_suff) {
+  const char *dot = strrchr(file_name, '.');
+  size_t base_len = dot ? (size_t)(dot - file_name) : strlen(file_name);
+  size_t suff_len = strlen(file_suff);
+  size_t total = base_len + suff_len + 1;
+  
+  char *new_file_name = handle_malloc(total);
+  if(!new_file_name) {report_internal_error(ERROR_CODE_1); return NULL;}
+  memcpy(new_file_name, file_name, base_len);
+  memcpy(new_file_name + base_len, file_suff, suff_len + 1);
   return new_file_name;
 }
 

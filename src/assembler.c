@@ -12,11 +12,9 @@ int main(int args_num, char *args[]) {
     as_file = create_file(args[args_num], ".as");
     
     if(!macro_exec(as_file)) continue;
-    
     printf("First pass:\n");
     
     am_file = create_file(args[args_num], ".am");
-    
     if(pass1_exe(am_file)) {
       continue;
     }

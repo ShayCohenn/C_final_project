@@ -133,7 +133,12 @@ char *remove_macro_decleration(char file_name[]) {
     if(strcmp(token, "mcro") == 0){
       while(strcmp(token, "mcroend") != 0) {
         fprintf(output_file, "\n");
-        fgets(str, MAX_LINE_SIZE, file);
+        if(!fgets(str, MAX_LINE_SIZE, file)) {
+          report_internal_error(ERROR_CODE_13);
+          fclose(file);
+          fclose(output_file);
+          return NULL;
+        }
         token = strtok(str, " \n");
         
         while(token == NULL) {
@@ -200,7 +205,7 @@ char *replace_all_macros(char file_name[], node *head) {
     }
     
     final_file = fopen(final_file_name, "w");
-    if(is_empty_file(final_file, "w") == 0) {
+    if(is_empty_file(final_file, "w")) {
       sudden_file_close(6, "file", temp_file, "%s", temp_file_name, "%s", final_file_name);
       return NULL;
     }
@@ -208,7 +213,8 @@ char *replace_all_macros(char file_name[], node *head) {
     while(fgets(str, MAX_LINE_SIZE, temp_file)) {
       mcro_pos = strstr(str, mcro->name);
       if(mcro_pos != NULL) {
-        *(str + strlen(str) - 1) = '\0';
+        size_t L = strlen(str);
+        if(L > 0 && str[L-1] == '\n') str[L-1] = '\0';
         new_str = replace_one_macro(str, mcro);
         if(new_str == NULL) {
           sudden_file_close(8, "file", final_file, "file", temp_file, "%s", temp_file_name, "%s", final_file_name);
@@ -297,7 +303,6 @@ int macro_exec(char file_name[]) {
     report_internal_error(ERROR_CODE_13);
     return 0;
   }
-  
   
   free(new_file1);
   
