@@ -1,3 +1,7 @@
 ;comment
-
+mcro abc
+	mov r1,r2
+	prn #2
+mcroend
 MAIN: mov #1, r3
+	abc

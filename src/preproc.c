@@ -102,7 +102,7 @@ int add_macro(char *file_name, node **head) {
 }
 
 char *remove_macro_decleration(char file_name[]) { 
-  char *word, *new_file;
+  char *token, *new_file;
   char str[MAX_LINE_SIZE];
   char str_cpy[MAX_LINE_SIZE];
   FILE *file, *output_file;
@@ -114,30 +114,32 @@ char *remove_macro_decleration(char file_name[]) {
   }
   
   new_file = create_file(file_name, ".t02");
+  
   output_file = fopen(new_file, "w");
   if(output_file == NULL) {
     report_internal_error(ERROR_CODE_7);
     sudden_file_close(4, "file", file, "%s", new_file);
     return NULL;
   }
+  
   while(fgets(str, MAX_LINE_SIZE, file)) {
     strcpy(str_cpy, str);
-    word = strtok(str, " \n");
-    if(word == NULL) {
+    token = strtok(str, " \n");
+    if(token == NULL) {
       fprintf(output_file, "\n");
       continue;
     }
     
-    if(strcmp(word, "mcro") == 0){
-      while(strcmp(word, "endmcro") != 0) {
+    if(strcmp(token, "mcro") == 0){
+      while(strcmp(token, "mcroend") != 0) {
         fprintf(output_file, "\n");
         fgets(str, MAX_LINE_SIZE, file);
-        word = strtok(str, " \n");
+        token = strtok(str, " \n");
         
-        while(word == NULL) {
+        while(token == NULL) {
           fprintf(output_file, "\n");
           fgets(str, MAX_LINE_SIZE, file);
-          word = strtok(str, " \n");
+          token = strtok(str, " \n");
         }
       }
       fprintf(output_file, "\n");
@@ -282,6 +284,12 @@ int macro_exec(char file_name[]) {
     return 0;
   }
   
+  if(check_macro_decl_order(new_file1, head)) {
+    delete_ll(head);
+    sudden_file_close(2, "%s", new_file1);
+    return 0;
+  }
+  
   new_file2 = remove_macro_decleration(new_file1);
   if(new_file2 == NULL) {
     delete_ll(head);
@@ -289,6 +297,7 @@ int macro_exec(char file_name[]) {
     report_internal_error(ERROR_CODE_13);
     return 0;
   }
+  
   
   free(new_file1);
   
