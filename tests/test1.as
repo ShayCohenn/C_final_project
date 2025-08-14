@@ -8,4 +8,5 @@ prn #-5
 m1
 m1
 sub r1, r4
+K: .string "asd"
 END: stop

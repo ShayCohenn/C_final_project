@@ -203,51 +203,28 @@ int save_nums_to_arr(char *str, char *token_cpy, inst_parts *inst, int *err_code
 }
 
 int str_to_shorts_arr(char *str, inst_parts *inst, int *err_code) {
-  int len;
-  char *token, *after;
+  int len, flag;
+  char *token;
   
-  len = inst->len = 0;
-  inst->nums = NULL;
+  len = 0;
+  inst->len = 0;
+  if(*(token = strtok(NULL, "\n")) != '"') { *err_code = ERROR_CODE_23; return 0; }
   
-  token = strtok(NULL, "\n");
-  if(!token) {
-    *err_code = ERROR_CODE_21;
-    return 0;
-  }
-    
-  while(*token && isspace((unsigned char)*token)) token++;
-  if(*token != '"') {
-    *err_code = ERROR_CODE_21;
-    return 0;
-  }
-  token++;
-  if(strchr(token, '"') == NULL) {
-    *err_code = ERROR_CODE_21;
-    return 0;
-  }
+  flag = 0;
   
-  printf("Starting loop\ntoken:%s\ntoken+len:%s\n", token, token+len);
-  while(*(token+len) != '"') {
-  printf("looping %d\n token+len:%s\n", len, token+len);
+  while(*(token + len) != '"') {
     if(inc_array_size(&inst, ++len) == 0) return 0;
     *(inst->nums + len - 1) = (short)(*(token + len - 1));
-    printf("inst->nums %hn\n", inst->nums);
+    flag = 1;
   }
-  printf("ended loop\n%s\n", token+len+1);
-  after = token + len + 1;
-  while(*after && isspace((unsigned char)*after)) after++;
-  printf("after: %s\n", after);
-  if(*after != '\0'){
-    printf("inside if: %s\n", (token+len+1));
+  if(!(*(token + len + 1) == '\0' || *(token + len + 1) == '\n')) {
     *err_code = ERROR_CODE_22;
+    if(flag == 1) free(inst->nums);
     return 0;
   }
-  if(inc_array_size(&inst, len+1) == 0) return 0;
-  
-  *(inst->nums + len) = 0;
-  
-  inst->len = len + 1;
-  printf("inst->len = %d, len = %d, inst->nums = %hn\n", inst->len, len, inst->nums);
+  if(inc_array_size(&inst, ++len) == 0) return 0;
+  *(inst->nums + len - 1) = 0;
+  inst->len = len;
   return 1;
 }
 
@@ -292,9 +269,7 @@ inst_parts *read_inst(char *str, int *err_code) {
     save_nums_to_arr(str, token_cpy, inst, err_code);
   else if(strcmp(token, ".string") == 0)
     str_to_shorts_arr(str,inst,err_code);
-  else if(strcmp(token, ".mat") == 0) {
-    return 0;
-  }
+  else if(strcmp(token, ".mat") == 0) return 0;
   else if(strcmp(token, ".entry") == 0) {
     token = strtok(NULL, " \n");
     if(valid_label(token)) {
@@ -333,10 +308,7 @@ inst_parts *read_extern_entry(char *str, int *err_code) {
   
   inst = handle_malloc(sizeof(inst_parts));
   
-  if(inst == NULL) {
-    *err_code = ERROR_CODE_1;
-    return NULL;
-  }
+  if(inst == NULL) { *err_code = ERROR_CODE_1; return NULL; }
   
   inst->label = NULL;
   inst->nums = NULL;

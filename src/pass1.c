@@ -36,18 +36,17 @@ int pass1_exe(char *file_name) {
   command_parts *command;
   inst_parts *inst;
   location am_file;
-  
   FILE *file;
   symbol_address *label_table;
   
   err_code = 0;
   err_found = 0;
   
+  inst_created = 1;
   label_table_line = 0;
   externs_count = 0;
   entries_count = 0;
   label_table = NULL;
-  
   if(!valid_line_len(file_name)) err_found = 1;
   
   file = fopen(file_name, "r");
@@ -62,29 +61,28 @@ int pass1_exe(char *file_name) {
   IC = -1;
   
   err_found = handle_memory_alloc(&externs, &entries, &code, &data);
-  
   while(fgets(str, MAX_LINE_SIZE, file) != NULL && IC + DC <= MAX_IC - IC_INIT_VAL) {
     err_code = 0;
-    inst_created = 0;
     (am_file.line)++;
     if(strcmp(str, "\n") == 0) continue;
     
     if(strchr(str, '.')) {
       strcpy(str_cpy, str);
       if(strstr(str_cpy, ".entry") || strstr(str_cpy, ".extern")) {
-        inst = read_extern_entry(str_cpy, &err_code);
+        inst = read_extern_entry(str_cpy, &err_code);/*
         if(!inst) {
           if(err_code) report_external_error(err_code, am_file);
           err_found = 1;
           continue;
-        }
+        }*/
+        
         
         if(inst->is_extern == 0)
           insert_labels(&entries, inst, am_file, ++entries_count, &err_code);
         else if(inst->is_extern == 1)
           insert_labels(&externs, inst, am_file, ++externs_count, &err_code);
-        free(inst);
-        continue;
+        /*free(inst);
+        continue;*/
       }
       else if(strstr(str_cpy, ".data") != NULL || strstr(str_cpy, ".string") != NULL || strstr(str_cpy, ".mat")) {
         inst = read_inst(str_cpy, &err_code);

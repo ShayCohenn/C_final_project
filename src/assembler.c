@@ -15,9 +15,11 @@ int main(int args_num, char *args[]) {
     printf("First pass:\n");
     
     am_file = create_file(args[args_num], ".am");
+    printf("am file created\n");
     if(pass1_exe(am_file)) {
       continue;
     }
+    printf("finished first pass \n");
     
     free(as_file);
     free(am_file);
