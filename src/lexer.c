@@ -203,7 +203,7 @@ int save_nums_to_arr(char *str, char *token_cpy, inst_parts *inst, int *err_code
 }
 
 int str_to_shorts_arr(char *str, inst_parts *inst, int *err_code) {
-  int flag, len;
+  int len;
   char *token, *after;
   
   len = inst->len = 0;
@@ -226,14 +226,12 @@ int str_to_shorts_arr(char *str, inst_parts *inst, int *err_code) {
     return 0;
   }
   
-  flag = 0;
   printf("Starting loop\ntoken:%s\ntoken+len:%s\n", token, token+len);
   while(*(token+len) != '"') {
   printf("looping %d\n token+len:%s\n", len, token+len);
     if(inc_array_size(&inst, ++len) == 0) return 0;
     *(inst->nums + len - 1) = (short)(*(token + len - 1));
     printf("inst->nums %hn\n", inst->nums);
-    flag = 1;
   }
   printf("ended loop\n%s\n", token+len+1);
   after = token + len + 1;

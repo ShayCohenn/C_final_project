@@ -46,13 +46,13 @@ char *macro_to_str(FILE *file, fpos_t *file_pos, int *line) {
   macro_len = 0;
   str[0] = '\0';
   
-  while(fgets(str, MAX_LINE_SIZE, file) && (strcmp(str, "endmcro\n")) != 0) {
-    if((strstr(str, "endmcro") != NULL) && strlen(str) != strlen("endmcro")) {
+  while(fgets(str, MAX_LINE_SIZE, file) && (strcmp(str, "mcroend\n")) != 0) {
+    if((strstr(str, "mcroend") != NULL) && strlen(str) != strlen("mcroend")) {
       report_internal_error(ERROR_CODE_9);
       return NULL;
     }
     (*line)++;
-    if(strcmp(str, "endmcro\n") != 0) 
+    if(strcmp(str, "mcroend\n") != 0) 
       macro_len += strlen(str);
   }
   
@@ -132,15 +132,7 @@ char *remove_macro_decleration(char file_name[]) {
     
     if(strcmp(token, "mcro") == 0){
       while(strcmp(token, "mcroend") != 0) {
-        fprintf(output_file, "\n");
         fgets(str, MAX_LINE_SIZE, file);
-        /*
-        if(!fgets(str, MAX_LINE_SIZE, file)) {
-          report_internal_error(ERROR_CODE_13);
-          fclose(file);
-          fclose(output_file);
-          return NULL;
-        }*/
         token = strtok(str, " \n");
         
         while(token == NULL) {
@@ -213,10 +205,9 @@ char *replace_all_macros(char file_name[], node *head) {
     }
     
     while(fgets(str, MAX_LINE_SIZE, temp_file)) {
+    
       mcro_pos = strstr(str, mcro->name);
-      if(mcro_pos != NULL) {/*
-        size_t L = strlen(str);
-        if(L > 0 && str[L-1] == '\n') str[L-1] = '\0';*/
+      if(mcro_pos != NULL) {        
         *(str + strlen(str) - 1) = '\0';
         new_str = replace_one_macro(str, mcro);
         if(new_str == NULL) {

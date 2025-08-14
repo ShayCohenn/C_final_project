@@ -74,7 +74,7 @@ void whitespace_remove_str(char str[]) {
 
 char *whitespace_remove_file(char file_name[]) {
   char *new_file_name;
-  char str[100];
+  char str[MAX_LINE_SIZE+2];
   int line;
   FILE *file, *file_temp;
   file = fopen(file_name, "r");
