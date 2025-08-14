@@ -18,7 +18,7 @@ typedef struct command_parts {
 
 typedef struct inst_parts {
   char *label;
-  short *nums;
+  int *nums;
   int len;
   char *arg_label;
   int is_extern;

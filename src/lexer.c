@@ -154,7 +154,7 @@ int valid_str(const char *str) {
 }
 
 int inc_array_size(inst_parts **inst, int len) {
-  short *ptr;
+  int *ptr;
   ptr = (*inst)->nums;
   (*inst)->nums = realloc((*inst)->nums, (len+1) * sizeof(short));
   if((*inst)->nums == NULL) {
@@ -210,8 +210,11 @@ int str_to_shorts_arr(char *str, inst_parts *inst, int *err_code) {
   inst->len = 0;
   if(*(token = strtok(NULL, "\n")) != '"') { *err_code = ERROR_CODE_23; return 0; }
   
-  flag = 0;
+  token++;
   
+  if(strchr(token, '"') == NULL) { *err_code = ERROR_CODE_23; return 0; }
+  
+  flag = 0;
   while(*(token + len) != '"') {
     if(inc_array_size(&inst, ++len) == 0) return 0;
     *(inst->nums + len - 1) = (short)(*(token + len - 1));
@@ -229,7 +232,7 @@ int str_to_shorts_arr(char *str, inst_parts *inst, int *err_code) {
 }
 
 int comma_after_str(char *str, int *err_code) {
-  if(strchr(str,'.')) {
+  if(strchr(str,',')) {
     *err_code = ERROR_CODE_24;
     return 1;
   }
@@ -295,7 +298,6 @@ inst_parts *read_inst(char *str, int *err_code) {
   } else {
     comma_after_str(token, err_code);
   }
-  
   return inst;
 }
 

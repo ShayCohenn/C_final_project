@@ -8,6 +8,7 @@
 #include "../headers/globals.h"
 #include "../headers/errors.h"
 #include "../headers/code_handler.h"
+#include "../headers/symbols_table_handler.h"
 
 int handle_memory_alloc(symbol_table **externs, symbol_table **entries, conv_code **code, conv_code **data) {
    
@@ -42,12 +43,13 @@ int pass1_exe(char *file_name) {
   err_code = 0;
   err_found = 0;
   
-  inst_created = 1;
+  inst_created = 0;
   label_table_line = 0;
   externs_count = 0;
   entries_count = 0;
   label_table = NULL;
   if(!valid_line_len(file_name)) err_found = 1;
+  
   
   file = fopen(file_name, "r");
   if(!file) {
@@ -59,8 +61,15 @@ int pass1_exe(char *file_name) {
   
   DC = 0;
   IC = -1;
+
   
-  err_found = handle_memory_alloc(&externs, &entries, &code, &data);
+  if(handle_memory_alloc(&externs, &entries, &code, &data)) {
+    err_found = 0;
+    inst_created = 0;
+    fclose(file);
+    return err_found;
+  }
+  
   while(fgets(str, MAX_LINE_SIZE, file) != NULL && IC + DC <= MAX_IC - IC_INIT_VAL) {
     err_code = 0;
     (am_file.line)++;
@@ -68,21 +77,16 @@ int pass1_exe(char *file_name) {
     
     if(strchr(str, '.')) {
       strcpy(str_cpy, str);
+      
       if(strstr(str_cpy, ".entry") || strstr(str_cpy, ".extern")) {
-        inst = read_extern_entry(str_cpy, &err_code);/*
-        if(!inst) {
-          if(err_code) report_external_error(err_code, am_file);
-          err_found = 1;
-          continue;
-        }*/
-        
+        inst = read_extern_entry(str_cpy, &err_code);
+        if(!inst) { err_found = 1; continue; }         
         
         if(inst->is_extern == 0)
           insert_labels(&entries, inst, am_file, ++entries_count, &err_code);
         else if(inst->is_extern == 1)
-          insert_labels(&externs, inst, am_file, ++externs_count, &err_code);
-        /*free(inst);
-        continue;*/
+          insert_labels(&externs, inst, am_file, ++externs_count, &err_code);        
+        continue;
       }
       else if(strstr(str_cpy, ".data") != NULL || strstr(str_cpy, ".string") != NULL || strstr(str_cpy, ".mat")) {
         inst = read_inst(str_cpy, &err_code);
@@ -101,21 +105,31 @@ int pass1_exe(char *file_name) {
         
         if(err_code != 0) {
           report_external_error(err_code, am_file);
-          if(inst_created) free(inst);
+          if(inst_created) {
+            if(inst->nums) free(inst->nums);
+            free(inst);
+            inst = NULL;
+          }
           err_found = 1;
           continue;
         } else {
           if(inst_created) {
             if(add_machine_code_data(&data, inst, &DC, am_file) == 0) {
+              if(inst->nums) free(inst->nums);
+              free(inst);
+              inst = NULL;
               err_found = 1;
               continue;
             }
           }
         }
+        
         if(inst_created) {
           if(inst->nums) free(inst->nums);
-          free(inst);
+            free(inst);
+          
         }
+        
       } else {
         command = read_command(str, &err_code);
         if(err_code == 0) {
@@ -141,7 +155,11 @@ int pass1_exe(char *file_name) {
         free(command);
       }
     }
-    /*second pass*/
+    
+    if(pass2_exe(file_name, label_table, IC, DC, label_table_line, externs_count, entries_count, code, data, externs, entries, err_found) == 0) {
+      err_found = 1;
+    }
+    
   fclose(file);
   return err_found;
 }

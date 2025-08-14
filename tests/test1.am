@@ -7,5 +7,5 @@ mov r5,r7
 inc r2
 mov r5,r7
 sub r1,r4
-K: .string "asd"
+K: .string "pook"
 END: stop
