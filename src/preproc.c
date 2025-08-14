@@ -61,7 +61,7 @@ char *macro_to_str(FILE *file, fpos_t *file_pos, int *line) {
 }
 
 int add_macro(char *file_name, node **head) {
-  int line, success;
+  int line, success, mcro_line;
   FILE *file;
   fpos_t file_pos;
   char str[MAX_LINE_SIZE];
@@ -79,7 +79,7 @@ int add_macro(char *file_name, node **head) {
   while(fgets(str, MAX_LINE_SIZE, file)) {
     line++;
     if(strcmp(strtok(str, " "), "mcro") == 0) {
-      int macro_line = line;
+      mcro_line = line;
       if(!is_valid_macro(str, &name, line, file_name)) {
         success = 0;
         continue;
@@ -93,8 +93,8 @@ int add_macro(char *file_name, node **head) {
         continue;
       }
       
-      fsetpos(file, &file_pos);
-      add_node_to_ll(head, name, content, macro_line);
+      fgetpos(file, &file_pos);
+      add_node_to_ll(head, name, content, mcro_line);
     }
   }
   fclose(file);
@@ -133,12 +133,14 @@ char *remove_macro_decleration(char file_name[]) {
     if(strcmp(token, "mcro") == 0){
       while(strcmp(token, "mcroend") != 0) {
         fprintf(output_file, "\n");
+        fgets(str, MAX_LINE_SIZE, file);
+        /*
         if(!fgets(str, MAX_LINE_SIZE, file)) {
           report_internal_error(ERROR_CODE_13);
           fclose(file);
           fclose(output_file);
           return NULL;
-        }
+        }*/
         token = strtok(str, " \n");
         
         while(token == NULL) {
@@ -189,7 +191,7 @@ char *replace_all_macros(char file_name[], node *head) {
   temp_file_name = create_file(file_name, ".tmp");
   final_file_name = create_file(file_name, ".am");
   
-  if(!copy_file(file_name, temp_file_name) || !copy_file(file_name, final_file_name)) {
+  if(!copy_file(temp_file_name, file_name) || !copy_file(final_file_name, file_name)) {
     report_internal_error(ERROR_CODE_12);
     report_internal_error(ERROR_CODE_13);
     sudden_file_close(4, "%s", temp_file_name, "%s", final_file_name);
@@ -212,9 +214,10 @@ char *replace_all_macros(char file_name[], node *head) {
     
     while(fgets(str, MAX_LINE_SIZE, temp_file)) {
       mcro_pos = strstr(str, mcro->name);
-      if(mcro_pos != NULL) {
+      if(mcro_pos != NULL) {/*
         size_t L = strlen(str);
-        if(L > 0 && str[L-1] == '\n') str[L-1] = '\0';
+        if(L > 0 && str[L-1] == '\n') str[L-1] = '\0';*/
+        *(str + strlen(str) - 1) = '\0';
         new_str = replace_one_macro(str, mcro);
         if(new_str == NULL) {
           sudden_file_close(8, "file", final_file, "file", temp_file, "%s", temp_file_name, "%s", final_file_name);

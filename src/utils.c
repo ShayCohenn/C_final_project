@@ -33,17 +33,17 @@ void *handle_malloc(long obj_size) {
     report_internal_error(ERROR_CODE_1);
   return obj_ptr;
 }
-/*
+
 char *create_file(char *file_name, char *file_suff) {
   char *c, *new_file_name;
   new_file_name = handle_malloc(MAX_LINE_SIZE * sizeof(char));
   strcpy(new_file_name, file_name);
-  if((c = strrchr(new_file_name, '.')) != NULL)
+  if((c = strchr(new_file_name, '.')) != NULL)
     *c = '\0';
   strcat(new_file_name, file_suff);
   return new_file_name;
-}*/
-
+}
+/*
 char *create_file(const char *file_name, const char *file_suff) {
   const char *dot = strrchr(file_name, '.');
   size_t base_len = dot ? (size_t)(dot - file_name) : strlen(file_name);
@@ -56,7 +56,7 @@ char *create_file(const char *file_name, const char *file_suff) {
   memcpy(new_file_name + base_len, file_suff, suff_len + 1);
   return new_file_name;
 }
-
+*/
 void sudden_file_close(int args_num, ...) {
    int i;
    char *str;
@@ -98,7 +98,7 @@ int is_empty_file(FILE *file, char *mode) {
   return 0;
 }
 
-int copy_file(char *original_file_name, char *new_file_name) {
+int copy_file(char *new_file_name, char *original_file_name) {
   char str[MAX_LINE_SIZE];
   FILE *file, *new_file;
   
@@ -106,7 +106,7 @@ int copy_file(char *original_file_name, char *new_file_name) {
   if(is_empty_file(file, "r")) return 0;
   
   new_file = fopen(new_file_name, "w");
-  if(is_empty_file(new_file, "w")) {
+  if(is_empty_file(new_file, "w") == 1) {
     fclose(file);
     return 0;
   }

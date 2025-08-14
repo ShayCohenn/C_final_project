@@ -61,7 +61,7 @@ void whitespace_remove_str(char str[]) {
     while(is_whitespace(*(str+i))) {
       i++;
     }
-    if(*(str+i) != '\n' && *(str+i) != '\0') {
+    if(!(*(str+i) == '\n' || *(str+i) == '\0')) {
       *(str_temp+j) = ' ';
       j++;
     }
@@ -74,7 +74,7 @@ void whitespace_remove_str(char str[]) {
 
 char *whitespace_remove_file(char file_name[]) {
   char *new_file_name;
-  char str[MAX_LINE_SIZE + 2];
+  char str[100];
   int line;
   FILE *file, *file_temp;
   file = fopen(file_name, "r");
@@ -97,7 +97,7 @@ char *whitespace_remove_file(char file_name[]) {
   }
   
   line = 0;
-  while(fgets(str, MAX_LINE_SIZE+2, file) != NULL) { 
+  while(fgets(str, 1000, file) != NULL) { 
     line++;
     if(strlen(str) > MAX_LINE_SIZE) {
       location as_file;
