@@ -123,3 +123,19 @@ short command_to_binary(command_parts *command) {
   
   return combine_bits(opc, src, dest);
 }
+
+int join_data_code(conv_code **code, conv_code *data, int IC, int DC) {
+  int i;
+  conv_code *ptr;
+  ptr = *code;
+  
+  if(inc_memo(code, IC+DC) == 0) { free(ptr); free(data); return 0; }
+  
+  for(i = 0; i < DC; i++) {
+    (*code + IC + i + 1)->label = (data + i)->label;
+    (*code + IC + i + 1)->line = (data + i)->line;
+    (*code + IC + i + 1)->short_num = (data + i)->short_num;
+  }
+  free(data);
+  return 1;
+}

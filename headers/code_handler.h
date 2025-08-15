@@ -16,6 +16,6 @@ int add_machine_code_data(conv_code **data, inst_parts *inst, int *DC, location 
 int add_extra_machine_code_line(conv_code **code, command_parts *command, location am_file, int *IC, int is_src); 
 short command_to_binary(command_parts *command);
 unsigned short reg_to_binary(command_parts *command, int reg_src);
-
+int join_data_code(conv_code **code, conv_code *data, int IC, int DC);
 
 #endif

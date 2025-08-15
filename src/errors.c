@@ -43,7 +43,10 @@ const Error errors[] = {
   {ERROR_CODE_34, "ERROR: Unknown argument related error."},
   {ERROR_CODE_35, "ERROR: Extra text after arguments."},
   {ERROR_CODE_36, "ERROR: Invalid register name."},
-  {ERROR_CODE_37, "ERROR: Invalid argument."}
+  {ERROR_CODE_37, "ERROR: Invalid argument."},
+  {ERROR_CODE_38, "ERROR: IC out of bound."},
+  {ERROR_CODE_39, "ERROR: Label already declared."},
+  {ERROR_CODE_40, "ERROR: label already declared as \".extern\"."}
 };
 
 void report_internal_error(int error_code) {
