@@ -139,3 +139,11 @@ int join_data_code(conv_code **code, conv_code *data, int IC, int DC) {
   free(data);
   return 1;
 }
+
+void free_code(conv_code *code, int code_count) {
+  int i;
+  for(i = 0; i <= code_count; i++) {
+    if((code + i)->label != NULL) { free((code + i)->label); }
+  }
+  free(code);
+}

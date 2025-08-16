@@ -25,6 +25,9 @@ void update_data_address(symbol_address *label_table, int table_lines, int IC);
 void reset_label_address(symbol_address *label_table, int table_lines);
 void replace_externs_value(conv_code *code, symbol_table *externs, int externs_count, int count, char *file_name);
 int set_label_address(conv_code *code, symbol_address *label_table, int line, int IC, char *file_name);
-
+int extern_file(conv_code *code, int count, symbol_table *externs, int externs_count, char *file_name);
+int entries_file(symbol_address *label_table, int line, symbol_table *entries, int entries_count, char *file_name);
+void free_symbol_table(symbol_address *label_table, int line);
+void free_other_tables(symbol_table *table, int count);
 
 #endif

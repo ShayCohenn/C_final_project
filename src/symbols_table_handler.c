@@ -45,6 +45,7 @@ int check_table_labels(symbol_address *label_table, int lines, char *file_name) 
   for(i = 0; i < lines; i++) {
     for(j = 0; j < lines; j++) {
       if(strcmp((label_table + i)->name, (label_table + j)->name) == 0) {
+      printf("test\n");
         location am_file;
         am_file.file_name = file_name;
         am_file.line = (label_table + j)->line;
@@ -128,4 +129,72 @@ int set_label_address(conv_code *code, symbol_address *label_table, int line, in
     }
   }
   return err_found;
+}
+
+int extern_file(conv_code *code, int count, symbol_table *externs, int externs_count, char *file_name) {
+  FILE *file;
+  int i, j, flag, empty;
+  char *temp;
+  
+  empty = 1;
+  temp = create_file(file_name, ".ext");
+  file = fopen(temp, "w");
+  if(file == NULL) { report_internal_error(ERROR_CODE_7); return 0; }
+  
+  for(i = 0; i <= count; i++) {
+    flag = 0;
+    if((code + i)->label != NULL) {
+      for(j = 0; j < externs_count && flag == 0; j++) {
+        if(strcmp((code+i)->label, (externs + j)->name) == 0) {
+          fprintf(file, "%s\t%d\n", (externs + j)->name, IC_INIT_VAL + i);
+          flag = 1;
+          empty = 0;
+        }
+      }
+    }
+  }
+  fclose(file);
+  if(empty) remove(temp);
+  free(temp);
+  return 1;
+}
+
+int entries_file(symbol_address *label_table,int line,symbol_table *entries,int entries_count, char *file_name) {
+  FILE *file;
+  int i, j, flag, empty;
+  char *temp;
+  
+  empty = 1;
+  temp = create_file(file_name, ".ent");
+  file = fopen(temp, "w");
+  
+  if(file == NULL) { report_internal_error(ERROR_CODE_7); return 0; }
+  
+  for(i = 0; i < line; i++) {
+    flag = 0;
+    
+    for(j = 0; j < entries_count && flag == 0; j++) {
+      if(strcmp((label_table + i)->name, (entries + j)->name) == 0) {
+        fprintf(file, "%s\t%d\n", (entries + j)->name, (label_table + i)->address);
+        flag = 1;
+        empty = 0;
+      }
+    }
+  }
+  fclose(file);
+  if(empty) remove(temp);
+  free(temp);
+  return 1;
+}
+
+void free_symbol_table(symbol_address *label_table, int line) {
+  int i;
+  for(i = 0; i < line; i++) { free((label_table + i)->name); }
+  free(label_table);
+}
+
+void free_other_tables(symbol_table *table, int count) {
+  int i;
+  for(i = 0; i < count; i++) { free((table + i)->name); }
+  free(table);
 }

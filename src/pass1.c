@@ -9,6 +9,7 @@
 #include "../headers/errors.h"
 #include "../headers/code_handler.h"
 #include "../headers/symbols_table_handler.h"
+#include "../headers/pass2.h"
 
 int handle_memory_alloc(symbol_table **externs, symbol_table **entries, conv_code **code, conv_code **data) {
    
@@ -155,7 +156,8 @@ int pass1_exe(char *file_name) {
         free(command);
       }
     }
-    
+    printf("%s\n", label_table->name);
+    printf("second pass\n");
     if(pass2_exe(file_name, label_table, IC, DC, label_table_line, externs_count, entries_count, code, data, externs, entries, err_found) == 0) {
       err_found = 1;
     }

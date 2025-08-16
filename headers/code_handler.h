@@ -17,5 +17,6 @@ int add_extra_machine_code_line(conv_code **code, command_parts *command, locati
 short command_to_binary(command_parts *command);
 unsigned short reg_to_binary(command_parts *command, int reg_src);
 int join_data_code(conv_code **code, conv_code *data, int IC, int DC);
+void free_code(conv_code *code, int code_count);
 
 #endif

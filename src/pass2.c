@@ -9,12 +9,44 @@
 #include "../headers/errors.h"
 #include "../headers/utils.h"
 
-int pass2_exe(char *file_name, symbol_address *label_table, int IC, int DC, int line, int externs_count, int entries_count, conv_code *code, conv_code *data, symbol_table *externs, symbol_table *entries, int err_found) {
+int code_to_base4(conv_code *code, char *file_name, int IC, int DC) {
+  int i, count;
+  FILE *file;
+  char *ob_file_name, *base4_char;
+  count = IC + DC;
+  
+  ob_file_name = create_file(file_name, ".ob");
+  
+  file = fopen(ob_file_name, "w");
+  
+  if(file == NULL) { report_internal_error(ERROR_CODE_7); return 0; }
+  
+  fprintf(file, "%d %d\n", IC+1, DC);
+  for(i = 0; i <= count; i++) {/*
+    base4_char = base4((code + i)->short_num);
+    fprintf(file, "%s\n", base4_char);
+    free(base4_char);*/
+    printf("%d\n", (int)((code + i)->short_num));
+  }
+  free(ob_file_name);
+  fclose(file);
+  return 1;
+}
 
+void free_memory(conv_code *code, symbol_address *label_table, symbol_table *entries, symbol_table *externs, int code_count, int line, int entries_count, int externs_count) {
+  free_code(code, code_count);
+  free_symbol_table(label_table, line);
+  free_other_tables(externs, externs_count);
+  free_other_tables(entries, entries_count);
+}
+
+  
+
+int pass2_exe(char *file_name, symbol_address *label_table, int IC, int DC, int line, int externs_count, int entries_count, conv_code *code, conv_code *data, symbol_table *externs, symbol_table *entries, int err_found) {
   if(IC > MAX_IC) { report_internal_error(ERROR_CODE_38); err_found = 1; }
   
   if(check_table_labels(label_table, line, file_name) == 0) err_found = 1;
-  
+
   if(extern_defined(externs, externs_count, label_table, line, file_name) == 1) err_found = 1;
   
   update_data_address(label_table, line, IC);
@@ -26,9 +58,9 @@ int pass2_exe(char *file_name, symbol_address *label_table, int IC, int DC, int 
   
   if(set_label_address(code, label_table, line, IC, file_name) == 0) err_found = 1;
   
-  if(err_found = 0) {
+  if(err_found == 0) {
     code_to_base4(code, file_name, IC, DC);
-    extern_file(code, externs, externs_count, file_name);
+    extern_file(code, IC + DC, externs, externs_count, file_name);
     entries_file(label_table, line, entries, entries_count, file_name);
   }
   free_memory(code, label_table, entries, externs, IC + DC, line, entries_count, externs_count);
